@@ -1,5 +1,4 @@
 <?php
-echo "<pre>";
 $template = '
 	<body>
 	<placeholder label="first"/>
@@ -8,17 +7,14 @@ $template = '
 	<placeholder label="fooi"/>
 	<placeholder label="totaal"/>
 	
-	<calculator>
-		<action name="totaal">
+	<hippocrates>
+		<calculate label="totaal">
 			<term operator="add" fields="boodschappen,fooi"/>
-		</action>
-	</calculator>
-	</body>
-	
-	
+		</calculate>
+	</hippocrates>
 	';
 
-require("Hippocrates.php");
+require("../Hippocrates.php");
 $hippo = new Hippocrates;
 $document = (object)array(
 				"first" => "John",
@@ -28,4 +24,4 @@ $document = (object)array(
 			);
 
 $output = $hippo->generate($template, $document);
-print_r($output);
+echo $output;
