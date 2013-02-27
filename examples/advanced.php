@@ -129,7 +129,7 @@ $template = '<html>
 		</div>
 	</div>
 
-	<modifier>
+	<calculator>
 		<action name="opnametijd_totaal" options="decimals:2" initial-value="1">
 			<term operator="mult" fields="opnametijd,opnametijd_prijs"/>
 		</action>
@@ -166,7 +166,7 @@ $template = '<html>
 			<term operator="add" fields="subtotal,btw"/>
 		</action>
 
-	</modifier>
+	</calculator>
     
 </div>
 

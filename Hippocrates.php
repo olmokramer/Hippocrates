@@ -33,7 +33,6 @@ class Hippocrates {
 	private $document;
 	private $calculatorXML;
 	private $placeholders;
-	
 	private $values = array();
 	
 	/*
@@ -44,11 +43,9 @@ class Hippocrates {
 		
 		$this->template = $template;
 		$this->document = $document;
-		$this->calculatorXML = $this->getCalculatorXML();
-		
+		$this->getCalculatorElement();
 		$this->getPlaceholders();
-		$this->parseDocumentValues($this->document);
-		$this->parseCalculatorValues();
+		$this->parseDocumentValues();
 		$this->performCalculations();
 		$this->parseValues();
 		return $this->template;
@@ -59,49 +56,28 @@ class Hippocrates {
 	*/
 	
 	private function getPlaceholders() {
-		$pattern = "/<placeholder.*?src=\"calculator\".*?\/>/i";
-		preg_match_all($pattern, $this->template, $this->placeholders->calculator);
-		$pattern = "/<placeholder.*?/>/i";
-		preg_match_all($pattern, $this->template, $this->placeholders->all);
+		$pattern = "/<placeholder.*?label=.*?\/>/i";
+		preg_match_all($pattern, $this->template, $matches);
+		$this->placeholders = $matches[0];
 	}
 	
 	/*
 	parse document placeholders
 	*/
 	
-	private function parseDocumentValues($documentValues) {
-		foreach($documentValues as $field => $value) {
-			switch(gettype($value)) {
+	private function parseDocumentValues() {
+		foreach($this->document as $fieldName => $fieldValue) {
+			switch(gettype($fieldValue)) {
 				case 'array':
-					$this->parseDocumentValues($value);
-					break;
 				case 'object':
-					$this->parseDocumentValues($value);
+					$this->parseDocumentValues($fieldValue);
 					break;
 				case 'string':
-					$this->values[(string)$field] = $value;
-					break;
 				case 'float':
-					$this->values[(string)$field] = $value;
-					break;
-				case 'int':
-					$this->values[(string)$field] = $value;
+				case 'integer':
+					$this->values[(string)$fieldName] = $fieldValue;
 					break;
 			}
-		}
-	}
-
-	/*
-	parse calculator placeholders
-	*/
-	
-	private function parseCalculatorValues() {
-	
-		$placeholders = $this->placeholders->calculator;
-
-		foreach($placeholders as $placeholder) {			
-			$placeholder = $this->parseXMLAttribute($placeholder, "label");
-			$this->values[(string)$placeholder] = null;
 		}
 	}
 		
@@ -129,17 +105,13 @@ class Hippocrates {
 	*/
 	
 	private function performCalculation($action) {
-				
 		$value = (isset($action['initial-value'])) ? $action['initial-value'] : 0;
-		$options = (isset($action['options'])) ? $this->parseOptions($action['options']) : 0;
-		
 		$name = $action['name'];		
 		$terms = $action->children()->term;
 
 		foreach($terms as $term) {
 			$value = $this->performTerm($term, $value);
 		}
-		
 		$this->values[(string)$name] = (string)$value;
 	}
 	
@@ -185,18 +157,34 @@ class Hippocrates {
 	/*
 	*/
 	
-	private function getCalculatorXML() {
+	private function getCalculatorElement() {
 		$pos = strpos($this->template, '<calculator>');
-		$len = strpos($this->template, '</calculator>') - $pos + strlen('</calculator>');
-		$calcXML = substr($this->template, $pos, $len);
-		return $calcXML;
+		if($pos !== false) {
+			$len = strpos($this->template, '</calculator>') - $pos + strlen('</calculator>');
+			$this->calculatorXML = substr($this->template, $pos, $len);
+		} else {
+			$this->calculatorXML = "<calculator></calculator>";
+		}
 	}
 	
 	/*
 	*/
 	
 	private function parseValues() {
-		foreach($this->placeholders->all as $placeholder) {
+		foreach($this->placeholders as $placeholder) {
+			$label = $this->parseXMLAttribute($placeholder, "label");
+			$replace = $this->values[$label];
+			$this->template = str_replace($placeholder, $replace, $this->template);
+		}
+		$this->template = str_replace($this->calculatorXML, "", $this->template);
+	}
+	
+}
+
+
+		//echo "parsing values...";
+/*
+		foreach($this->placeholders as $placeholder) {
 			$label = parseXMLAttribute($placeholder, 'decimals');
 			$value = $this->values[$label];
 			$dec = parseXMLAttribute($placeholder, 'decimals');
@@ -205,13 +193,5 @@ class Hippocrates {
 			}
 			$this->template = preg_replace($placeholder, $value, $this->template);
 		}
-		/*foreach($this->values as $label => $value) {
-			$find = '/<placeholder.*?label="' . (string)$label . '".*?\/>/i';
-			$replace = $value;
-			$this->template = preg_replace($find, $replace, $this->template);
-		}*/
-		$this->template = str_replace($this->calculatorXML, '', $this->template);
-	}
-	
-}
+*/
 ?>
