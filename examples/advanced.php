@@ -50,15 +50,15 @@ $template = '<html>
 		<div id="factuur-info">
 			<table id="info-table">
 				<tr>
-                	<td class="item-title">factuurnr </td>
+                	<td class="item-title">Invoice No.</td>
 					<td><placeholder label="id"/></td>
-                    <td class="item-title">adres</td>
+                    <td class="item-title">Address</td>
 					<td><placeholder label="addresslabel"/></td>
                 </tr>
 				<tr>
-                	<td class="item-title">betreft</td>
-					<td><placeholder label="title"/></td>
-					<td class="item-title">factuurdatum</td>
+                	<td class="item-title">Subject</td>
+					<td><placeholder label="subject"/></td>
+					<td class="item-title">Date</td>
 					<td><placeholder label="pubdate"/></td>
 				</tr>
 			</table>
@@ -70,59 +70,41 @@ $template = '<html>
 			<table class="info-table">
 
 				<tr>
-					<td class="item-title">dienst</td>
-					<td class="item-title" colspan="3">stukprijs (&euro;)</td>
-					<td class="item-title">uurtarief (&euro;)</td>
-					<td class="item-title">totaal</td>
+					<td class="item-title">service</td>
+					<td class="item-title" colspan="3">pieces</td>
+					<td class="item-title">price/h (&euro;)</td>
+					<td class="item-title">total</td>
 				</tr>
 
 				<tr>
-					<td>opnametijd (minuten)</td>
-					<td colspan="3"><placeholder label="opnametijd"/></td>
-					<td><placeholder label="opnametijd_prijs"/></td>
-					<td><placeholder label="opnametijd_totaal"/></td>
+					<td>production</td>
+					<td colspan="3"><placeholder label="production"/></td>
+					<td><placeholder label="production_price" decimals="2"/></td>
+					<td><placeholder label="production_total" decimals="2"/></td>
 				</tr>
 				<tr>
-					<td>RAW image ontwikkelen</td>
-					<td colspan="3"><placeholder label="raw_ontwikkelen"/></td>
-					<td><placeholder label="raw_ontwikkelen_prijs"/></td>
-					<td><placeholder label="raw_ontwikkelen_totaal"/></td>
+					<td>post-production</td>
+					<td colspan="3"><placeholder label="post_production"/></td>
+					<td><placeholder label="post_production_price" decimals="2"/></td>
+					<td><placeholder label="post_production_total" decimals="2"/></td>
 				</tr>
 				<tr>
-                	<td>reiskosten</td>
-					<td colspan="3"><placeholder label="reiskosten"/></td>
-					<td><placeholder label="reiskosten_prijs"/></td>
-					<td colspan="3"><placeholder label="reiskosten_totaal"/></td>
-				</tr>
-				<tr>
-					<td>handling</td>
-					<td colspan="3"><placeholder label="handling"/></td>
-					<td><placeholder label="handling_prijs"/></td>
-					<td colspan="3"><placeholder label="handling_totaal"/></td>
-                </tr>
-                <tr>
-                	<td>prints</td>
-					<td colspan="3"><placeholder label="prints"/></td>
-					<td><placeholder label="prints_prijs"/></td>
-					<td colspan="3"><placeholder label="prints_totaal"/></td>
-				</tr>
-				<tr>
-					<td>diversen</td>
-					<td colspan="3"><placeholder label="diversen"/></td>
-					<td><placeholder label="diversen_prijs"/></td>
-					<td><placeholder label="diversen_totaal"/></td>
+                	<td>travelling expenses</td>
+					<td colspan="3"><placeholder label="travel_expenses"/></td>
+					<td><placeholder label="travel_expenses_price" decimals="2"/></td>
+					<td><placeholder label="travel_expenses_total" decimals="2"/></td>
 				</tr>
 
 				<tr class="divider">
-					<td colspan="5">subtotaal</td>
-					<td><placeholder label="subtotal"/></td>
+					<td colspan="5">subtotal</td>
+					<td><placeholder label="subtotal" decimals="2"/></td>
 				</tr>
 				<tr>
-					<td colspan="5">btw 21%</td>
-					<td><placeholder label="btw"/></td>
+					<td colspan="5">VAT 21%</td>
+					<td><placeholder label="vat" decimals="2"/></td>
 				</tr>
 				<tr class="divider">
-					<td colspan="5">totaal</td>
+					<td colspan="5">total</td>
 					<td><placeholder label="total" decimals="2"/></td>
 				</tr>
 			</table>
@@ -130,40 +112,28 @@ $template = '<html>
 	</div>
 
 	<hippocrates>
-		<calculate label="opnametijd_totaal" initial-value="1">
-			<term operator="mult" fields="opnametijd,opnametijd_prijs"/>
+		<calculate label="production_total" initial-value="1">
+			<term operator="mult" fields="production,production_price"/>
 		</calculate>
-
-		<calculate label="raw_ontwikkelen_totaal" initial-value="1">
-			<term operator="mult" fields="raw_ontwikkelen,raw_ontwikkelen_prijs"/>
+		
+		<calculate label="post_production_total" initial-value="1">
+			<term operator="mult" fields="post_production,post_production_price"/>
 		</calculate>
-
-		<calculate label="reiskosten_totaal" initial-value="1">
-			<term operator="mult" fields="reiskosten,reiskosten_prijs"/>
-		</calculate>
-
-		<calculate label="handling_totaal" initial-value="1">
-			<term operator="mult" fields="handling,handling_prijs"/>
-		</calculate>
-
-		<calculate label="prints_totaal" initial-value="1">
-			<term operator="mult" fields="prints,prints_prijs"/>
-		</calculate>
-
-		<calculate label="diversen_totaal" initial-value="1">
-			<term operator="mult" fields="diversen,diversen_prijs"/>
+		
+		<calculate label="travel_expenses_total" initial-value="1">
+			<term operator="mult" fields="travel_expenses,travel_expenses_price"/>
 		</calculate>
 
 		<calculate label="subtotal">
-			<term operator="add" fields="opnametijd_totaal,raw_ontwikkelen_totaal,reiskosten_totaal,handling_totaal,prints_totaal,diversen_totaal"/>
+			<term operator="add" fields="production_total,post_production_total,travel_expenses_total"/>
 		</calculate>
 
-		<calculate label="btw" initial-value="1">
+		<calculate label="vat" initial-value="1">
 			<term operator="mult" fields="subtotal" multiplier="0.21"/>
 		</calculate>
 
 		<calculate label="total">
-			<term operator="add" fields="subtotal,btw"/>
+			<term operator="add" fields="subtotal,vat"/>
 		</calculate>
 
 	</hippocrates>
@@ -175,21 +145,15 @@ $template = '<html>
 
 $document = (object) array(
 	"id" => "2013-01",
-	"addresslabel" => "Wouter Vroege<br>Busken Huetstraat 4-II<br>1054 SZ Amsterdam",
-	"title" => "Voorbeeld factuur",
+	"addresslabel" => "J. Doe<br>3, Main Street<br>12345 Sim City",
+	"subject" => "Invoice example",
 	"pubdate" => "2013-01-10",
-	"opnametijd_prijs" => 75,
-	"prints" => 100,
-	"opnametijd" => 60,
-	"raw_ontwikkelen" => 200,
-	"handling" => 40,
-	"reiskosten" => 19,
-	"diversen" => 100,
-	"raw_ontwikkelen_prijs" => 30,
-	"reiskosten_prijs" => 20,
-	"handling_prijs" => 100,
-	"prints_prijs" => 500,
-	"diversen_prijs" => 250,
+	"production" => 75,
+	"production_price" => 100,
+	"post_production" => 25,
+	"post_production_price" => 30,
+	"travel_expenses" => 5,
+	"travel_expenses_price" => 150,
 );
 
 require("../Hippocrates.php");
