@@ -176,7 +176,7 @@ class Hippocrates {
 			$replace = $this->values[$label];
 			$dec = $this->parseXMLAttribute($placeholder, "decimals");
 			if ($dec != false) {
-				$value = (is_numeric($value)) ? number_format($value, 2, ',', '.') : $value;
+				$replace = (is_numeric($replace)) ? number_format($replace, $dec, ',', '.') : $replace;
 			}
 			$this->template = str_replace($placeholder, $replace, $this->template);
 		}
