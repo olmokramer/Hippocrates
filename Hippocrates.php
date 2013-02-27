@@ -126,19 +126,23 @@ class Hippocrates {
 		
 		foreach($fields as $field) {
 			
-			switch($operator) {
+			switch(strtolower($operator)) {
 				case 'add':
 					$value += (float)$this->values[$field];
 					break;
+				case 'subtract':
 				case 'sub':
 					$value -= (float)$this->values[$field];
 					break;
+				case 'multiply':
 				case 'mult':
 					$value *= (float)$this->values[$field];		
 					break;
+				case 'divide':
 				case 'div':
 					$value /= (float)$this->values[$field];
 					break;
+				case 'power':
 				case 'pow':
 					$value ^= (float)$this->values[$field];
 					break;
