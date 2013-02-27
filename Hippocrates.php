@@ -175,27 +175,10 @@ class Hippocrates {
 			$label = $this->parseXMLAttribute($placeholder, "label");
 			$replace = $this->values[$label];
 			$dec = $this->parseXMLAttribute($placeholder, "decimals");
-			if ($dec != false) {
-				$replace = (is_numeric($replace)) ? number_format($replace, $dec, ',', '.') : $replace;
-			}
+			$replace = (is_numeric($replace) && $dec !== false) ? number_format($replace, $dec, ',', '.') : $replace;
 			$this->template = str_replace($placeholder, $replace, $this->template);
 		}
 		$this->template = str_replace($this->calculatorXML, "", $this->template);
-	}
-	
+	}	
 }
-
-
-		//echo "parsing values...";
-/*
-		foreach($this->placeholders as $placeholder) {
-			$label = parseXMLAttribute($placeholder, 'decimals');
-			$value = $this->values[$label];
-			$dec = parseXMLAttribute($placeholder, 'decimals');
-			if($dec != false) {
-				$value = (is_numeric($value)) ? number_format($value, 2, ',', '.') : (string)$value;
-			}
-			$this->template = preg_replace($placeholder, $value, $this->template);
-		}
-*/
 ?>
