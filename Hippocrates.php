@@ -95,24 +95,24 @@ class Hippocrates {
 	
 	private function performCalculations() {
 		$xml = simplexml_load_string($this->calculatorXML);
-		$actions = $xml->children()->action;
-		foreach($actions as $action) {
-			$this->performCalculation($action);
+		$calculations = $xml->children()->calculate;
+		foreach($calculations as $calculation) {
+			$this->performCalculation($calculation);
 		}
 	}
 	
 	/*
 	*/
 	
-	private function performCalculation($action) {
-		$value = (isset($action['initial-value'])) ? $action['initial-value'] : 0;
-		$name = $action['name'];		
-		$terms = $action->children()->term;
+	private function performCalculation($calculation) {
+		$value = (isset($calculation['initial-value'])) ? $calculation['initial-value'] : 0;
+		$label = $calculation['label'];		
+		$terms = $calculation->children()->term;
 
 		foreach($terms as $term) {
 			$value = $this->performTerm($term, $value);
 		}
-		$this->values[(string)$name] = (string)$value;
+		$this->values[(string)$label] = (string)$value;
 	}
 	
 	/*
@@ -158,12 +158,12 @@ class Hippocrates {
 	*/
 	
 	private function getCalculatorElement() {
-		$pos = strpos($this->template, '<calculator>');
+		$pos = strpos($this->template, '<hippocrates>');
 		if($pos !== false) {
-			$len = strpos($this->template, '</calculator>') - $pos + strlen('</calculator>');
+			$len = strpos($this->template, '</hippocrates>') - $pos + strlen('</hippocrates>');
 			$this->calculatorXML = substr($this->template, $pos, $len);
 		} else {
-			$this->calculatorXML = "<calculator></calculator>";
+			$this->calculatorXML = "<hippocrates></hippocrates>";
 		}
 	}
 	
@@ -174,6 +174,10 @@ class Hippocrates {
 		foreach($this->placeholders as $placeholder) {
 			$label = $this->parseXMLAttribute($placeholder, "label");
 			$replace = $this->values[$label];
+			$dec = $this->parseXMLAttribute($placeholder, "decimals");
+			if ($dec != false) {
+				$value = (is_numeric($value)) ? number_format($value, 2, ',', '.') : $value;
+			}
 			$this->template = str_replace($placeholder, $replace, $this->template);
 		}
 		$this->template = str_replace($this->calculatorXML, "", $this->template);

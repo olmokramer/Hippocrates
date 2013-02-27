@@ -123,50 +123,50 @@ $template = '<html>
 				</tr>
 				<tr class="divider">
 					<td colspan="5">totaal</td>
-					<td><placeholder label="total"/></td>
+					<td><placeholder label="total" decimals="2"/></td>
 				</tr>
 			</table>
 		</div>
 	</div>
 
-	<calculator>
-		<action name="opnametijd_totaal" options="decimals:2" initial-value="1">
+	<hippocrates>
+		<calculate label="opnametijd_totaal" initial-value="1">
 			<term operator="mult" fields="opnametijd,opnametijd_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="raw_ontwikkelen_totaal" options="decimals:2" initial-value="1">
+		<calculate label="raw_ontwikkelen_totaal" initial-value="1">
 			<term operator="mult" fields="raw_ontwikkelen,raw_ontwikkelen_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="reiskosten_totaal" options="decimals:2" initial-value="1">
+		<calculate label="reiskosten_totaal" initial-value="1">
 			<term operator="mult" fields="reiskosten,reiskosten_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="handling_totaal" options="decimals:2" initial-value="1">
+		<calculate label="handling_totaal" initial-value="1">
 			<term operator="mult" fields="handling,handling_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="prints_totaal" options="decimals:2" initial-value="1">
+		<calculate label="prints_totaal" initial-value="1">
 			<term operator="mult" fields="prints,prints_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="diversen_totaal" options="decimals:2" initial-value="1">
+		<calculate label="diversen_totaal" initial-value="1">
 			<term operator="mult" fields="diversen,diversen_prijs"/>
-		</action>
+		</calculate>
 
-		<action name="subtotal" options="decimals:2">
+		<calculate label="subtotal">
 			<term operator="add" fields="opnametijd_totaal,raw_ontwikkelen_totaal,reiskosten_totaal,handling_totaal,prints_totaal,diversen_totaal"/>
-		</action>
+		</calculate>
 
-		<action name="btw" options="decimals:2" initial-value="1">
+		<calculate label="btw" initial-value="1">
 			<term operator="mult" fields="subtotal" multiplier="0.21"/>
-		</action>
+		</calculate>
 
-		<action name="total" options="decimals:2">
+		<calculate label="total">
 			<term operator="add" fields="subtotal,btw"/>
-		</action>
+		</calculate>
 
-	</calculator>
+	</hippocrates>
     
 </div>
 
@@ -192,7 +192,7 @@ $document = (object) array(
 	"diversen_prijs" => 250,
 );
 
-require("Hippocrates.php");
+require("../Hippocrates.php");
 $hippo = new Hippocrates;
 $output = $hippo->generate($template, $document);
 echo $output;
