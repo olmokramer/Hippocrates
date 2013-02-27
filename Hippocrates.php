@@ -1,9 +1,8 @@
 <?php
-error_reporting(0);
-class HTeMpLateParser {
+class Hippocrates {
 
 /**
- * HTeMpLateParser
+ * Hippocrates
  *
  *
  * LICENSE: This source file is subject the MIT license
@@ -11,7 +10,7 @@ class HTeMpLateParser {
  * http://opensource.org/licenses/MIT.
  *
  * @category   Utilities
- * @package    HTeMpLateParser
+ * @package    Hippocrates
  * @author     Olmo Kramer <olmo.kramer@gmail.com>
  * @author     Wouter Vroege <wouter@woutervroege.nl>
  * @copyright  2013 Olmo Kramer / Wouter Vroege

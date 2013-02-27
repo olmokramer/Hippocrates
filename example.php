@@ -192,7 +192,7 @@ $document = (object) array(
 	"diversen_prijs" => 250,
 );
 
-require("HTeMpLateParser.php");
-$parser = new HTeMpLateParser;
-$output = $parser->generate($template, $document);
+require("Hippocrates.php");
+$hippo = new Hippocrates;
+$output = $hippo->generate($template, $document);
 echo $output;
