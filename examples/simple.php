@@ -3,13 +3,13 @@ $template = '
 	<body>
 	<placeholder label="first"/>
 	<placeholder label="last"/>
-	<placeholder label="boodschappen"/>
-	<placeholder label="fooi"/>
+	<placeholder label="bill"/>
+	<placeholder label="tip"/>
 	<placeholder label="totaal"/>
-	
+
 	<hippocrates>
 		<calculate label="totaal">
-			<term operator="add" fields="boodschappen,fooi"/>
+			<term operator="add" fields="bill,tip"/>
 		</calculate>
 	</hippocrates>
 	';
@@ -19,8 +19,8 @@ $hippo = new Hippocrates;
 $document = (object)array(
 				"first" => "John",
 				"last" => "Doe",
-				"boodschappen" => 10,
-				"fooi" => 5,
+				"bill" => 10,
+				"tip" => 5,
 			);
 
 $output = $hippo->generate($template, $document);
