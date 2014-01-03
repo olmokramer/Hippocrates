@@ -14,28 +14,28 @@ $template = '<html>
 		font-weight: 300;
 		border-spacing:0;
 	}
-	
+
 	tr {
 		vertical-align:top;
 	}
-	
+
 	td {
 		padding: 5px;
 		text-align:right;
 		border-spacing:0;
 	}
-	
+
 	td.item-title {
 		font-weight: bold;
 	}
-	
+
 	td:first-child {
 	text-align: left
 	}
-	
+
 	tr:nth-child(even) {background: #ddd}
 	tr:nth-child(odd) {background: #FFF}
-	
+
 	tr.divider td {
 	border-top: 1px solid black;
 	}
@@ -63,9 +63,9 @@ $template = '<html>
 				</tr>
 			</table>
 		</div>
-		
+
 		<p><br></p>
-		
+
 		<div id="prijs-info">
 			<table class="info-table">
 
@@ -79,7 +79,7 @@ $template = '<html>
 				<tr>
 					<td>production</td>
 					<td colspan="3"><placeholder label="production"/></td>
-					<td><placeholder label="production_price" decimals="2"/></td>
+					<td><placeholder label="production_price"/></td>
 					<td><placeholder label="production_total" decimals="2"/></td>
 				</tr>
 				<tr>
@@ -112,14 +112,18 @@ $template = '<html>
 	</div>
 
 	<hippocrates>
+		<setting label="decimals_count" value="5" />
+		<setting label="decimals_separator" value="." />
+		<setting label="thousands_separator" value="," />
+
 		<calculate label="production_total" initial-value="1">
 			<term operator="mult" fields="production,production_price"/>
 		</calculate>
-		
+
 		<calculate label="post_production_total" initial-value="1">
 			<term operator="mult" fields="post_production,post_production_price"/>
 		</calculate>
-		
+
 		<calculate label="travel_expenses_total" initial-value="1">
 			<term operator="mult" fields="travel_expenses,travel_expenses_price"/>
 		</calculate>
@@ -137,7 +141,7 @@ $template = '<html>
 		</calculate>
 
 	</hippocrates>
-    
+
 </div>
 
 </body>

@@ -26,45 +26,80 @@ class Hippocrates {
  * substr
  * other updates:
  * set division sequence ($value / $this->values['x'] OR $this->values['x'] / $values)
-
  */
 
 	private $template;
 	private $document;
+	private $settings;
 	private $calculatorXML;
 	private $placeholders;
 	private $values = array();
-	
+
 	/*
 	public
 	*/
-	
+
+	public function __construct() {
+		$this->setDefaultSettings();
+	}
+
 	public function generate($template, $document) {
-		
 		$this->template = $template;
 		$this->document = $document;
 		$this->getCalculatorElement();
+		$this->applySettings();
 		$this->getPlaceholders();
 		$this->parseDocumentValues();
 		$this->performCalculations();
 		$this->parseValues();
+		$this->setDefaultSettings();
 		return $this->template;
 	}
-	
+
+	/*
+	*/
+
+	private function setDefaultSettings() {
+		$this->settings = new \stdClass();
+		$this->settings->decimals_count = 2;
+		$this->settings->decimals_separator = ",";
+		$this->settings->thousands_separator = ".";
+	}
+
+	/*
+	*/
+
+	private function applySettings() {
+		$xml = simplexml_load_string($this->calculatorXML);
+		$settings = $xml->children()->setting;
+		foreach($settings as $setting) {
+			$this->applySetting($setting);
+		}
+	}
+
+	/*
+	*/
+
+	private function applySetting($setting) {
+		$label = $setting['label'];
+		$value = $setting['value'];
+		$this->settings->$label = $value;
+	}
+
 	/*
 	check for all <placeholder> elements in the given $template and return matches as array
 	*/
-	
+
 	private function getPlaceholders() {
 		$pattern = "/<placeholder.*?label=.*?\/>/i";
 		preg_match_all($pattern, $this->template, $matches);
 		$this->placeholders = $matches[0];
 	}
-	
+
 	/*
 	parse document placeholders
 	*/
-	
+
 	private function parseDocumentValues() {
 		foreach($this->document as $fieldName => $fieldValue) {
 			switch(gettype($fieldValue)) {
@@ -80,19 +115,19 @@ class Hippocrates {
 			}
 		}
 	}
-		
+
 	/*
 	return attribute from xml element
 	*/
-	
+
 	private function parseXMLAttribute($xmlElement, $attr) {
 		$xml = simplexml_load_string($xmlElement);
 		return (isset($xml->attributes()->$attr)) ? (string)$xml->attributes()->$attr : false;
 	}
-	
+
 	/*
 	*/
-	
+
 	private function performCalculations() {
 		$xml = simplexml_load_string($this->calculatorXML);
 		$calculations = $xml->children()->calculate;
@@ -100,13 +135,13 @@ class Hippocrates {
 			$this->performCalculation($calculation);
 		}
 	}
-	
+
 	/*
 	*/
-	
+
 	private function performCalculation($calculation) {
 		$value = (isset($calculation['initial-value'])) ? $calculation['initial-value'] : 0;
-		$label = $calculation['label'];		
+		$label = $calculation['label'];
 		$terms = $calculation->children()->term;
 
 		foreach($terms as $term) {
@@ -114,18 +149,18 @@ class Hippocrates {
 		}
 		$this->values[(string)$label] = (string)$value;
 	}
-	
+
 	/*
 	*/
-	
+
 	private function performTerm($term, $value) {
-		
+
 		$operator = (string)$term->attributes()->operator;
 		$multiplier = (isset($term->attributes()->multiplier)) ? (float)$term->attributes()->multiplier : 1;
 		$fields = explode(",", $term->attributes()->fields);
-		
+
 		foreach($fields as $field) {
-			
+
 			switch(strtolower($operator)) {
 				case 'add':
 					$value += (float)$this->values[$field];
@@ -136,7 +171,7 @@ class Hippocrates {
 					break;
 				case 'multiply':
 				case 'mult':
-					$value *= (float)$this->values[$field];		
+					$value *= (float)$this->values[$field];
 					break;
 				case 'divide':
 				case 'div':
@@ -150,17 +185,17 @@ class Hippocrates {
 					die("operation not supported");
 					break;
 			}
-			$value *= $multiplier;	
-			
+			$value *= $multiplier;
+
 		}
-		
+
 		return $value;
-		
+
 	}
-	
+
 	/*
 	*/
-	
+
 	private function getCalculatorElement() {
 		$pos = strpos($this->template, '<hippocrates>');
 		if($pos !== false) {
@@ -170,19 +205,20 @@ class Hippocrates {
 			$this->calculatorXML = "<hippocrates></hippocrates>";
 		}
 	}
-	
+
 	/*
 	*/
-	
+
 	private function parseValues() {
 		foreach($this->placeholders as $placeholder) {
 			$label = $this->parseXMLAttribute($placeholder, "label");
 			$replace = $this->values[$label];
 			$dec = $this->parseXMLAttribute($placeholder, "decimals");
-			$replace = (is_numeric($replace) && $dec !== false) ? number_format($replace, $dec, ',', '.') : $replace;
+			if(!$dec) $dec = (int) $this->settings->decimals_count;
+			$replace = (is_numeric($replace)) ? number_format($replace, $dec, $this->settings->decimals_separator, $this->settings->thousands_separator) : $replace;
 			$this->template = str_replace($placeholder, $replace, $this->template);
 		}
 		$this->template = str_replace($this->calculatorXML, "", $this->template);
-	}	
+	}
 }
 ?>
