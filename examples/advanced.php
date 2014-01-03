@@ -79,7 +79,7 @@ $template = '<html>
 				<tr>
 					<td>production</td>
 					<td colspan="3"><placeholder label="production"/></td>
-					<td><placeholder label="production_price"/></td>
+					<td><placeholder label="production_price" decimals="2"/></td>
 					<td><placeholder label="production_total" decimals="2"/></td>
 				</tr>
 				<tr>
@@ -112,7 +112,7 @@ $template = '<html>
 	</div>
 
 	<hippocrates>
-		<setting label="decimals_count" value="5" />
+		<setting label="decimals_count" value="0" />
 		<setting label="decimals_separator" value="." />
 		<setting label="thousands_separator" value="," />
 
@@ -132,8 +132,8 @@ $template = '<html>
 			<term operator="add" fields="production_total,post_production_total,travel_expenses_total"/>
 		</calculate>
 
-		<calculate label="vat" initial-value="1">
-			<term operator="mult" fields="subtotal" multiplier="0.21"/>
+		<calculate label="vat" initial-value="0.21">
+			<term operator="mult" fields="subtotal"/>
 		</calculate>
 
 		<calculate label="total">

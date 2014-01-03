@@ -61,7 +61,7 @@ class Hippocrates {
 
 	private function setDefaultSettings() {
 		$this->settings = new \stdClass();
-		$this->settings->decimals_count = 2;
+		$this->settings->decimals_count = 0;
 		$this->settings->decimals_separator = ",";
 		$this->settings->thousands_separator = ".";
 	}
@@ -140,7 +140,7 @@ class Hippocrates {
 	*/
 
 	private function performCalculation($calculation) {
-		$value = (isset($calculation['initial-value'])) ? $calculation['initial-value'] : 0;
+		$value = (isset($calculation['initial-value'])) ? $this->getInitialValue((string)$calculation['initial-value']) : 0;
 		$label = $calculation['label'];
 		$terms = $calculation->children()->term;
 
@@ -186,11 +186,24 @@ class Hippocrates {
 					break;
 			}
 			$value *= $multiplier;
-
 		}
+		if(isset($term->attributes()->inverted)) $value = 1 / $value;
 
 		return $value;
 
+	}
+
+	/*
+	*/
+
+	private function getInitialValue($value) {
+		if(is_numeric($value)) {
+			return (float) $value;
+		} elseif(isset($this->values[$value])) {
+			return (float) $this->values[$value];
+		} else {
+			return 0;
+		}
 	}
 
 	/*
